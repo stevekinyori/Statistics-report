@@ -1,0 +1,69 @@
+<html>
+<head>
+    <title></title>
+
+</head>
+<script type = "text/javascript">
+    var indicatorid=[];
+    var indicatorname=[];
+    var chatindicatorid=[];
+    var counter=[];
+    var obj = { };
+    $(document).ready(function(){
+        $.get('../../../demo/api/charts.json', function(json){
+            $(json.charts).each(function(i, data){
+                var id = data.id;
+                $.get('../../../demo/api/charts/'+id+'.json',function(json){
+                    $(json.indicators).each(function(i, data){
+                        var anchor=data.id;
+                        chatindicatorid.push(anchor);
+
+                    });
+
+                });
+
+            });
+        });
+        $.get('../../../demo/api/indicators.json', function(json){
+            $(json.indicators).each(function(i, data){
+                var id = data.id;
+                indicatorid.push(id);
+                var name=data.name;
+                indicatorname.push(name);
+
+            });
+        });
+    });
+    $(document).ajaxStop(function(){
+           for(var i=0;i<indicatorid.length;i++){
+               var index= jQuery.inArray(indicatorid[i], chatindicatorid);
+               if (index<0){
+                   $("section").append(indicatorname[i]).append(': not used');
+               }
+               else{
+                  var idlenght=(chatindicatorid.length);
+                   var div= index/idlenght;
+                    var percentage= (div) *100;
+                   $("#section").append(indicatorname[i]).append(': used - '+index+' times '+' percentage use: '+percentage).append("<br/>");
+               }
+
+
+
+           }
+
+    });
+
+</script>
+
+<div>
+
+    <div id = "results">
+
+    </div>
+
+    <div id= "section">
+
+
+    </div>
+</div>
+</html>
