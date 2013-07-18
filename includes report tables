@@ -1,0 +1,100 @@
+<html>
+<head>
+    <title></title>
+
+</head>
+<script type = "text/javascript">
+    var indicatorid=[];
+    var indicatorname=[];
+    var chatindicatorid=[];
+    var reportindicatorid=[];
+    var counter=[];
+    var obj = { };
+    $(document).ready(function(){
+        $.get('../../../demo/api/charts.json', function(json){
+            $(json.charts).each(function(i, data){
+                var id = data.id;
+                $.get('../../../demo/api/charts/'+id+'.json',function(json){
+                    $(json.indicators).each(function(i, data){
+                        var anchor=data.id;
+                        chatindicatorid.push(anchor);
+
+                    });
+
+                });
+
+            });
+        });
+        $.get('../../../demo/api/indicators.json', function(json){
+            $(json.indicators).each(function(i, data){
+                var id = data.id;
+                indicatorid.push(id);
+                var name=data.name;
+                indicatorname.push(name);
+
+            });
+        });
+        $.get('../../../demo/api/reportTables.json', function(json){
+            $(json.reportTables).each(function(i, data){
+                var id = data.id;
+                $.get('../../../demo/api/reportTables/'+id+'.json',function(json){
+                    $(json.indicators).each(function(i, data){
+                        var anchor=data.id;
+                        reportindicatorid.push(anchor);
+
+                    });
+
+                });
+
+            });
+        });
+    });
+
+    $(document).ajaxStop(function(){
+           for(var i=0;i<indicatorid.length;i++){
+               var index= jQuery.inArray(indicatorid[i], chatindicatorid);
+               if (index<0){
+                   $("section").append(indicatorname[i]).append(': not used');
+               }
+               else{
+                  var idlenght=(chatindicatorid.length);
+                   var div= index/idlenght;
+                    var percentage= (div) *100;
+                   $("#section").append(indicatorname[i]).append(': used - '+index+' times '+' percentage use: '+percentage+'%').append("<br/>");
+               }
+
+
+
+           }
+        for(var i=0;i<indicatorid.length;i++){
+            var index= jQuery.inArray(indicatorid[i], reportindicatorid);
+            if (index<0){
+                $("results").append(indicatorname[i]).append(': not used');
+            }
+            else{
+                var lenght=(reportindicatorid.length);
+                var div= index/lenght;
+                var percentage= (div) *100;
+                $("#results").append(indicatorname[i]).append(': used - '+index+' times '+' percentage use: '+percentage+'%').append("<br/>");
+            }
+
+
+
+        }
+
+    });
+
+</script>
+
+<div>
+
+    <div id = "results">
+
+    </div>
+
+    <div id= "section">
+
+
+    </div>
+</div>
+</html>
