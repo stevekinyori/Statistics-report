@@ -1,0 +1,153 @@
+<html>
+<head>
+    <title></title>
+
+</head>
+<style>
+    #results
+    {
+        width:500px;
+        padding:10px;
+        border:5px solid gray;
+        margin:0px;
+    }
+    #section
+    {
+        width:500px;
+        padding:10px;
+        border:5px solid gray;
+        margin:0px;
+    }
+    #charts{
+        width:500px;
+        padding:10px;
+        border:5px solid gray;
+        margin:0px;
+    }
+
+
+</style>
+<script type = "text/javascript">
+    var indicatorid=[];
+    var indicatorname=[];
+    var chatindicatorid=[];
+    var reportindicatorid=[];
+    var mapindicatorid=[];
+    var counter=[];
+    var obj = { };
+    $(document).ready(function(){
+        $.get('../../../demo/api/charts.json', function(json){
+            $(json.charts).each(function(i, data){
+                var id = data.id;
+                $.get('../../../demo/api/charts/'+id+'.json',function(json){
+                    $(json.indicators).each(function(i, data){
+                        var anchor=data.id;
+                        chatindicatorid.push(anchor);
+
+                    });
+
+                });
+
+            });
+        });
+        $.get('../../../demo/api/indicators.json', function(json){
+            $(json.indicators).each(function(i, data){
+                var id = data.id;
+                indicatorid.push(id);
+                var name=data.name;
+                indicatorname.push(name);
+
+            });
+        });
+        $.get('../../../demo/api/reportTables.json', function(json){
+            $(json.reportTables).each(function(i, data){
+                var id = data.id;
+                $.get('../../../demo/api/reportTables/'+id+'.json',function(json){
+                    $(json.indicators).each(function(i, data){
+                        var anchor=data.id;
+                        reportindicatorid.push(anchor);
+
+                    });
+
+                });
+
+            });
+        });
+        $.get('../../../demo/api/mapViews.json', function(json){
+            $(json.mapViews).each(function(i, data){
+                var id = data.id;
+                $.get('../../../demo/api/mapViews/'+id+'.json',function(json){
+                    $(json.indicator).each(function(i, data){
+                        var anchor=data.id;
+                        mapindicatorid.push(anchor);
+
+                    });
+
+                });
+
+            });
+        });
+    });
+
+    $(document).ajaxStop(function(){
+
+       for(var i=0;i<indicatorid.length;i++){
+           var item=indicatorid[i];
+           var count= countElement(item, chatindicatorid);
+           if(count==0){
+               $("#charts").append(indicatorname[i]+'NOT USED: ').append("<br/>");
+           }
+            else{
+               $("#charts").append(indicatorname[i]+' USED: ').append(count).append(' TIMES in charts'+"<br/>");
+           }
+           count=countmaps(item,mapindicatorid);
+           if(count==0){
+               $("#section").append(indicatorname[i]+'NOT USED: ').append("<br/>");
+           }
+           else{
+               $("#section").append(indicatorname[i]+' USED: ').append(count).append(' TIMES in maps'+"<br/>");
+           }
+           count=countreports(item,reportindicatorid);
+           if(count==0){
+               $("#results").append(indicatorname[i]+'NOT USED: ').append("<br/>");
+           }
+           else{
+               $("#results").append(indicatorname[i]+' USED: ').append(count).append(' TIMES in reportTables'+"<br/>");
+           }
+
+       }
+
+        function countElement(item,chatindicatorid) {
+            var count = 0;
+            $.each(chatindicatorid, function(i,v) { if (v === item) count++; });
+            return count;
+        }
+         function countmaps(item,mapindicatorid){
+             var count = 0;
+             $.each(mapindicatorid, function(i,v) { if (v === item) count++; });
+             return count;
+         }
+        function countreports(item,reportindicatorid) {
+            var count = 0;
+            $.each(reportindicatorid, function(i,v) { if (v === item) count++; });
+            return count;
+        }
+    });
+
+</script>
+
+<div>
+
+    <div id = "results">
+      <h1>Report tables indicator statistics</h1>
+    </div>
+
+    <div id= "section">
+     <h1> map indicator statistics</h1>
+
+    </div>
+    <div id="charts">
+         <h1> Charts indicator statistics</h1>
+    </div>
+</div>
+</html>
