@@ -1,0 +1,423 @@
+<html>
+<head>
+    <title></title>
+
+</head>
+<style>
+    #resultsused {
+        border: 5px solid gray;
+        margin-left: 0;
+        padding: 10px;
+        width: 450px;
+    }
+    #resultsnotused {
+        border: 5px solid gray;
+        margin-left: 250;
+        padding: 10px;
+        width: 450px;
+    }
+    #sectionused {
+        border: 5px solid gray;
+        margin-left: 200;
+        padding: 10px;
+        width: 450px;
+    }
+    #sectionnotused {
+        border: 5px solid gray;
+        margin-left: 0;
+        padding: 10px;
+        width: 450px;
+    }
+    #chartsused {
+        border: 5px solid gray;
+        margin-left: 0;
+        padding: 10px;
+        width: 450px;
+    }
+    #chartsnotused {
+        border: 5px solid gray;
+        margin-left: 0;
+        padding: 10px;
+        width: 450px;
+    }
+    #totalused {
+        border: 5px solid gray;
+        margin-left: 0;
+        padding: 10px;
+        width: 450px;
+    }
+    #totalnotused {
+        border: 5px solid gray;
+        margin-left: 0;
+        padding: 10px;
+        width: 450px;
+    }
+    #reportsused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px;
+    }
+    #reportsnotused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+    #mapsused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+    #mapsnotused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+    #datachartsused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+    #datachartsnotused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+    #elementsused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+    #elementsnotused {
+        border: 5px solid gray;
+        padding: 10px;
+        width: 450px
+    }
+
+</style>
+<script type = "text/javascript">
+    var indicatorid=[];
+    var indicatorname=[];
+    var chatindicatorid=[];
+    var chatlink=[];
+    var chatid=[];
+    var chatidd=[];
+    var reportindicatorid=[];
+    var mapindicatorid=[];
+    var dataelementid=[];
+    var dataelementname=[];
+    var datacharts=[];
+    var datareports=[];
+    var datamap=[];
+    var mapid=[];
+    var mapidd=[];
+    var reportid=[];
+    var reportidd=[];
+    $(document).ready(function(){
+        $.get('../../../demo/api/charts.json', function(json){
+            $(json.charts).each(function(i, data){
+
+                var id=data.id;
+                $.get('../../../demo/api/charts/'+id+'.json',function(json){
+                    $(json.indicators).each(function(i, data){
+                        var anchor=data.id;
+                        chatindicatorid.push(anchor);
+                         chatid.push(id);
+                    });
+
+                });
+                $.get('../../../demo/api/charts/'+id+'.json',function(json){
+                    var idd=data.id;
+                    $(json.dataElements).each(function(i, data){
+                        var anchor=data.idd;
+                        datacharts.push(anchor);
+                         chatidd.push(id);
+                    });
+
+                });
+            });
+        });
+
+
+
+
+        $.get('../../../demo/api/dataElements.json', function(json){
+            $(json.dataElements).each(function(i, data){
+                var id = data.id;
+                dataelementid.push(id);
+                var name=data.name;
+                dataelementname.push(name);
+
+            });
+        });
+        $.get('../../../demo/api/indicators.json', function(json){
+            $(json.indicators).each(function(i, data){
+                var id = data.id;
+                indicatorid.push(id);
+                var name=data.name;
+                indicatorname.push(name);
+
+            });
+        });
+                            $.get('../../../demo/api/reportTables.json', function(json){
+                                $(json.reportTables).each(function(i, data){
+                                    var id = data.id;
+                                    $.get('../../../demo/api/reportTables/'+id+'.json',function(json){
+                                        $(json.indicators).each(function(i, data){
+                                            var anchor=data.id;
+                                            reportindicatorid.push(anchor);
+                                            reportid.push(id);
+                                        });
+
+                                    });
+                                    $.get('../../../demo/api/reportTables/'+id+'.json',function(json){
+                                        $(json.dataElements).each(function(i, data){
+                                            var anchor=data.id;
+                                            datareports.push(anchor);
+                                             reportidd.push(id);
+
+                                        });
+                                });
+                            });
+        $.get('../../../demo/api/mapViews.json', function(json){
+            $(json.mapViews).each(function(i, data){
+                var id = data.id;
+
+                $.get('../../../demo/api/mapViews/'+id+'.json',function(json){
+                    $(json.indicator).each(function(i, data){
+                        var anchor=data.id;
+                        mapindicatorid.push(anchor);
+                        mapid.push(id);
+                    });
+
+                });
+                $.get('../../../demo/api/mapViews/'+id+'.json',function(json){
+                    $(json.dataElements).each(function(i, data){
+                        var anchor=data.id;
+                        datamap.push(anchor);
+                         mapidd.push(id);
+                    });
+
+                });
+            });
+        });
+    });
+    });
+
+    $(document).ajaxStop(function(){
+        $("p").click();
+       for(var i=0;i<indicatorid.length;i++){
+           var item=indicatorid[i];
+           var counter=0;
+           var count= countElement(item, chatindicatorid);
+           counter=counter+count;
+                if(count==0){
+               $("#chartsnotused").append(indicatorname[i]+'NOT USED: ').append("<br/>");
+
+           }
+                else{
+                   var index= jQuery.inArray(indicatorid[i], chatindicatorid);
+                    var anchor=$("<a></a>").attr("href",'../../../demo/api/charts/'+chatid[index]+'/data').append(indicatorname[i]+' used: ').append(count).append(' TIMES in charts'+"<br/>");
+               $("#chartsused").append(anchor);
+
+           }
+           count=countmaps(item,mapindicatorid);
+           counter=counter+count;
+                if(count==0){
+               $("#sectionnotused").append(indicatorname[i]+'NOT USED: ').append("<br/>");
+           }
+                 else{
+                    var index= jQuery.inArray(indicatorid[i], mapindicatorid);
+                    var anchor=$("<a></a>").attr("href",'../../../demo/api/mapViews/'+mapid[index]+'/data').append(indicatorname[i]+' used: ').append(count).append(' TIMES in maps'+"<br/>");
+
+                    $("#sectionused").append(anchor);
+           }
+           count=countreports(item,reportindicatorid);
+           counter=counter+count;
+                if(count==0){
+               $("#resultsnotused").append(indicatorname[i]+'NOT USED: ').append("<br/>");
+           }
+                else{
+                    var index= jQuery.inArray(indicatorid[i], reportindicatorid);
+                    var anchor=$("<a></a>").attr("href",'../../../demo/api/reportTables/'+reportid[index]+'/data.pdf').append(indicatorname[i]+' used: ').append(count).append(' TIMES in Reports'+"<br/>");
+
+                    $("#resultsused").append(anchor);
+           }
+           if(counter>0){
+              var totallength=(reportindicatorid.length)+(chatindicatorid.length)+(mapindicatorid.length);
+               var percent=counter/totallength*100;
+               $("#totalused").append(indicatorname[i]+' USED : ').append(counter+' TIMES ');
+               $("#totalused").append('percentage use: '+percent+'%').append("<br/>");
+           }
+            else{
+               $("#totalnotused").append(indicatorname[i]+' NOT USED : ').append("<br/>");
+           }
+
+       }
+
+                            function countElement(item,chatindicatorid) {
+                                var count = 0;
+                                $.each(chatindicatorid, function(i,v) { if (v === item) count++; });
+                                return count;
+                            }
+                             function countmaps(item,mapindicatorid){
+                                 var count = 0;
+                                 $.each(mapindicatorid, function(i,v) { if (v === item) count++; });
+                                 return count;
+                             }
+                            function countreports(item,reportindicatorid) {
+                                var count = 0;
+                                $.each(reportindicatorid, function(i,v) { if (v === item) count++; });
+                                return count;
+                            }
+
+
+        function countdataelement(item,datacharts) {
+            var count = 0;
+            $.each(datacharts, function(i,v) { if (v === item) count++; });
+            return count;
+        }
+        function datamaps(item,datamap){
+            var count = 0;
+            $.each(datamap, function(i,v) { if (v === item) count++; });
+            return count;
+        }
+        function datarep(item,datareports) {
+            var count = 0;
+            $.each(datareports, function(i,v) { if (v === item) count++; });
+            return count;
+        }
+
+
+        for(var i=0;i<dataelementid.length;i++){
+            var item=dataelementid[i];
+            var counter=0;
+            var count= countdataelement(item, datacharts);
+            counter=counter+count;
+            if(count==0){
+                $("#datachartsnotused").append(dataelementname[i]+'NOT USED: ').append("<br/>");
+            }
+            else{
+
+                var index= jQuery.inArray(dataelementid[i], datacharts);
+                var anchor=$("<a></a>").attr("href",'../../../demo/api/charts/'+chatiid[index]+'/data').append(dataelementname[i]+' used: ').append(count).append(' TIMES in charts'+"<br/>");
+                $("#datachartsused").append(anchor);
+
+            }
+            count=datamaps(item,datamap);
+            counter=counter+count;
+            if(count==0){
+                $("#mapsnotused").append(dataelementname[i]+'NOT USED: ').append("<br/>");
+            }
+            else{
+                var index= jQuery.inArray(dataelementid[i], datamap);
+                var anchor=$("<a></a>").attr("href",'../../../demo/api/reportTables/'+reportidd[index]+'/data.pdf').append(dataelementname[i]+' used: ').append(count).append(' TIMES in maps'+"<br/>");
+                $("#mapsused").append(anchor);
+            }
+            count=datarep(item,datareports);
+            counter=counter+count;
+            if(count==0){
+                $("#reportsnotused").append(dataelementname[i]+'NOT USED: ').append("<br/>");
+            }
+            else{
+                var index= jQuery.inArray(dataelementid[i], datareports);
+                var anchor=$("<a></a>").attr("href",'../../../demo/api/reportTables/'+reportidd[index]+'/data.pdf').append(dataelementname[i]+' used: ').append(count).append(' TIMES in reportTables'+"<br/>");
+                $("#reportsused").append(anchor);
+            }
+            if(counter>0){
+                var totallength=(datareports.length)+(datacharts.length)+(datamap.length);
+                var percent=counter/totallength*100;
+                $("#elementsused").append(dataelementname[i]+' USED : ').append(counter+' TIMES ');
+                $("#elementsused").append('percentage use: '+percent+'%').append("<br/>");
+            }
+            else{
+                $("#elementsnotused").append(dataelementname[i]+' NOT USED : ').append("<br/>");
+            }
+        }
+
+
+    });
+
+</script>
+
+
+                     <div>
+                         <h1>Report tables indicator statistics</h1>
+                    <div id = "resultsused">
+                        <h2> Used</h2>
+
+                    </div>
+                    <div id="resultsnotused">
+                         <h2>Not used</h2>
+                    </div>
+                     </div>
+                                <div>
+                                 <h1> map indicator statistics</h1>
+                                    <div id= "sectionused">
+                                         <h2>Used</h2>
+                                    </div>
+                                    <div id="sectionnotused">
+                                          <h2>Not used</h2>
+                                    </div>
+                                </div>
+                                            <div>
+                                                <h1> Charts indicator statistics</h1>
+                                                <div id="chartsused">
+                                                   <h2>Used</h2>
+                                                </div>
+                                                <div id="chartsnotused">
+                                                   <h2>Not used</h2>
+                                                </div>
+                                            </div>
+                                                      <div>
+                                                          <h1> Total indicator usage</h1>
+                                                          <div id="totalused">
+                                                              <h2>Used</h2>
+                                                          </div>
+                                                          <div id="totalnotused">
+                                                              <h2>Not used</h2>
+                                                          </div>
+                                                      </div>
+
+
+     <div>
+         <h1>Report tables dataElements statistics</h1>
+        <div id ="reportsused">
+             <h2>Used</h2>
+        </div>
+        <div id="reportsnotused">
+              <h2>Not used</h2>
+         </div>
+     </div>
+            <div>
+                <h1> map dataElements statistics</h1>
+                <div id= "mapsused">
+                    <h2>Used</h2>
+
+                </div>
+                <div id="mapsnotused">
+                    <h2>Not used</h2>
+                </div>
+            </div>
+                    <div>
+                        <h1> Charts dataElements statistics</h1>
+                        <div id="datachartsused">
+                            <h2>Used</h2>
+                        </div>
+                        <div id="datachartsnotused">
+                            <h2>Not used</h2>
+                        </div>
+                    </div>
+                            <div>
+                                <h1> Total dataElements statistics</h1>
+                                <div id="elementsused">
+                                    <h2>Used</h2>
+                                </div>
+
+                                <div id="elementsnotused">
+                                    <h2>Not used</h2>
+                                </div>
+
+                            </div>
+
+
+</html>
